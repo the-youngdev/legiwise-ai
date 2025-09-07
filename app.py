@@ -5,7 +5,7 @@ from langdetect import detect
 
 # --- 1. SETUP & INITIALIZATION ---
 
-os.environ['HF_HOME'] = 'D:/huggingface_cache'
+os.environ['HF_HOME'] = 'D:/huggingface_cache'#change it according to your dir
 
 try:
     rag_agent = rag_pipeline.RagPipeline()
