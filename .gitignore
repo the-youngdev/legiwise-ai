@@ -1,0 +1,22 @@
+# Virtual environment
+.venv/
+env/
+venv/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Hugging Face cache
+huggingface_cache/
+D:/huggingface_cache/
+
+# Logs & checkpoints
+runs/
+*.log
+
+# IDE files
+.vscode/
+.idea/
