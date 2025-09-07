@@ -1,4 +1,12 @@
-# ⚖️ LegiWise AI: Project Status & Roadmap  
+# ⚖️ LegiWise AI: Project Status & Roadmap 
+# ⚖️ LegiWise AI  
+
+![Python](https://img.shields.io/badge/python-3.10%2B-blue.svg)
+![HuggingFace](https://img.shields.io/badge/🤗-Transformers-orange)
+![Gradio](https://img.shields.io/badge/Gradio-Interface-brightgreen)
+![License](https://img.shields.io/badge/License-MIT-yellow)
+![Status](https://img.shields.io/badge/Status-Active-success)
+
 
 **Date:** September 7, 2025  
 **Status:** Core Features Implemented · Final Debugging Phase  
@@ -98,4 +106,3 @@ Once running, open the provided `http://127.0.0.1:7860` link in your browser.
 
 ---
 
-✅ With this, your README is structured, professional, and ready for GitHub or documentation.
