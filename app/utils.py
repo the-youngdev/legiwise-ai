@@ -6,6 +6,8 @@ from pdf2image import convert_from_path
 import tempfile
 import os
 import re
+from typing import List, Dict, Tuple
+import unicodedata
 
 # Configure basic logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
