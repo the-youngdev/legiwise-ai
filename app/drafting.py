@@ -1,135 +1,85 @@
 # In app/drafting.py
 
-# This file contains templates for generating legal documents.
-# The 'fields' dictionary maps user-facing labels to simple, robust template keys.
-
 DRAFTING_TEMPLATES = {
     "Simple Legal Notice": {
         "fields": {
-            "Recipient Name": "recipient_name",
-            "Recipient Address": "recipient_address",
-            "Date": "date",
-            "Subject": "subject",
-            "Sender Name": "sender_name",
-            "Sender Address": "sender_address",
-            "Statement of Facts": "statement_of_facts",
-            "Action Required": "action_required",
-            "Notice Period (e.g., 15 days)": "notice_period"
+            "Recipient Name": "John Doe",
+            "Recipient Address": "123 Fake Street, Anytown, AN 12345",
+            "Date": "September 7, 2025",
+            "Subject": "Unpaid Invoices",
+            "Sender Name": "Jane Smith",
+            "Sender Address": "456 Real Avenue, Otherville, OT 67890",
+            "Statement of Facts": "Despite multiple reminders...",
+            "Action Required": "clear the outstanding payment in full",
+            "Notice Period (e.g., 15 days)": "15 days"
         },
         "template": """
 LEGAL NOTICE
 --------------------
-
 To,
-{recipient_name}
-{recipient_address}
+{Recipient Name}
+{Recipient Address}
 
-Date: {date}
+Date: {Date}
 
-**Subject: Notice regarding {subject}**
+**Subject: Notice regarding {Subject}**
 
-Dear {recipient_name},
+Dear {Recipient Name},
 
-Under instructions from and on behalf of my client, {sender_name}, residing at {sender_address}, I do hereby serve you with the following legal notice:
+Under instructions from and on behalf of my client, {Sender Name}, residing at {Sender Address}, I hereby serve you with the following legal notice:
 
-1. That my client states the following facts: {statement_of_facts}.
+1. That my client states the following facts: {Statement of Facts}.
 
-2. That you are hereby required to comply with the following: {action_required}, within a period of {notice_period} from the receipt of this legal notice, failing which my client will be forced to initiate appropriate legal proceedings against you at your own risk and cost.
-
-3. That a copy of this notice has been retained in my office for record and further necessary action.
+2. That you are hereby required to comply with the following: {Action Required}, within a period of {Notice Period (e.g., 15 days)} from the receipt of this notice.
 
 Awaiting your compliance.
 
 Yours faithfully,
-
-
 (Advocate)
 """
     },
-    
     "Basic Rental Agreement": {
         "fields": {
-            "Landlord Name": "landlord_name",
-            "Landlord Address": "landlord_address",
-            "Tenant Name": "tenant_name",
-            "Tenant Address": "tenant_address",
-            "Property Address": "property_address",
-            "Lease Start Date": "lease_start_date",
-            "Lease End Date": "lease_end_date",
-            "Monthly Rent (INR)": "monthly_rent_inr",
-            "Security Deposit (INR)": "security_deposit_inr"
+            "Landlord Name": "Peter Jones",
+            "Landlord Address": "789 Property Lane, LC 11223",
+            "Tenant Name": "Mary Williams",
+            "Tenant Address": "101 Tenant Drive, RT 44556",
+            "Property Address": "Apt 5B, 101 Tenant Drive, RT 44556",
+            "Lease Start Date": "October 1, 2025",
+            "Lease End Date": "September 30, 2026",
+            "Monthly Rent (INR)": "25,000",
+            "Security Deposit (INR)": "50,000"
         },
         "template": """
 RENTAL AGREEMENT
 --------------------
+This agreement is made on {Lease Start Date} between {Landlord Name} (Landlord) and {Tenant Name} (Tenant).
 
-This Rental Agreement is made and entered into on this day, {lease_start_date}, by and between:
+The Landlord agrees to lease to the Tenant the property at: {Property Address}.
 
-**THE LANDLORD:**
-Name: {landlord_name}
-Address: {landlord_address}
+The term of this lease is from {Lease Start Date} to {Lease End Date}.
 
-AND
+The Tenant shall pay a monthly rent of INR {Monthly Rent (INR)}.
 
-**THE TENANT:**
-Name: {tenant_name}
-Address: {tenant_address}
+A security deposit of INR {Security Deposit (INR)} has been paid.
 
-**1. PROPERTY:**
-The Landlord agrees to lease to the Tenant the property located at: {property_address}.
-
-**2. TERM:**
-The term of this lease shall be from {lease_start_date} to {lease_end_date}.
-
-**3. RENT:**
-The Tenant shall pay the Landlord a monthly rent of INR {monthly_rent_inr}, payable on or before the 5th day of each month.
-
-**4. SECURITY DEPOSIT:**
-The Tenant has paid a security deposit of INR {security_deposit_inr} to the Landlord. This deposit will be refunded to the Tenant at the end of the lease term, subject to deductions for any damages to the property.
-
-IN WITNESS WHEREOF, the parties have executed this agreement as of the date first above written.
-
+IN WITNESS WHEREOF, the parties have executed this agreement.
 
 _________________________
-{landlord_name} (Landlord)
-
+{Landlord Name} (Landlord)
 
 _________________________
-{tenant_name} (Tenant)
+{Tenant Name} (Tenant)
 """
     }
 }
 
-
 def generate_draft(template_name: str, details: dict) -> str:
-    """
-    Populates a selected template with user-provided details by mapping UI labels
-    to template keys.
-
-    Args:
-        template_name: The name of the template to use.
-        details: A dictionary where keys are the user-facing field labels.
-
-    Returns:
-        The formatted legal draft as a string.
-    """
+    """Populates a template with user-provided details."""
     template_info = DRAFTING_TEMPLATES.get(template_name)
     if not template_info:
-        return "Error: Selected template not found."
-    
+        return "Error: Template not found."
     try:
-        # Create the dictionary for formatting by mapping UI labels to template keys
-        format_dict = {}
-        field_mapping = template_info["fields"]
-        for ui_label, template_key in field_mapping.items():
-            if ui_label in details:
-                format_dict[template_key] = details[ui_label]
-            else:
-                raise KeyError(f"The required field '{ui_label}' was not provided.")
-
-        return template_info["template"].format(**format_dict)
+        return template_info["template"].format(**details)
     except KeyError as e:
-        return f"Error: A required field is missing from the input: {e}"
-    except Exception as e:
-        return f"An unexpected error occurred: {e}"
-
+        return f"Error: Missing field in details: {e}"

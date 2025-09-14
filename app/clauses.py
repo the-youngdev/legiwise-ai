@@ -1,89 +1,50 @@
+# In LEGIWISE/app/clauses.py
 import re
 import logging
+from typing import List, Dict
+import jsonlines
 
-# Configure basic logging
 logging.basicConfig(level=logging.INFO)
 
-# --- EXPANDED KEYWORD DEFINITIONS ---
+# --- BLOCK-ORIENTED CLAUSE PATTERNS ---
+# These patterns are designed to capture entire sections, not just lines.
 CLAUSE_PATTERNS = {
     "Parties": {
-        "keywords": ["parties", "between", "licensor", "licensee", "landlord", "tenant", "petitioner", "respondent"],
+        "pattern": r'(IN THE MATTER OF[\s\S]*?--VERSUS--[\s\S]*?--RESPONDENT)',
         "risk": "Low"
     },
-    "Definitions": {
-        "keywords": ["definitions", "defined", "shall mean"],
-        "risk": "Low"
-    },
-    "Payment Terms": {
-        "keywords": ["payment", "fees", "invoice", "pricing", "rent", "consideration", "monetary"],
+    "Prayer/Relief Sought": {
+        "pattern": r'(PRAYER[\s\S]*?(?:pass a decree|such other relief|ends of justice)\.)',
         "risk": "High"
     },
-    "Term and Termination": {
-        "keywords": ["term", "terminate", "termination", "cancel", "cancellation", "end this agreement", "revoke", "last will"],
-        "risk": "High"
-    },
-    "Governing Law and Jurisdiction": {
-        "keywords": ["governing law", "jurisdiction", "governed by the laws of", "courts of"],
+    "Jurisdiction": {
+        "pattern": r'((?:That the cause of action|this Hon\'ble Court has jurisdiction)[\s\S]*?(?:within the jurisdiction|Learned Court)\.)',
         "risk": "Medium"
     },
-    "Limitation of Liability": {
-        "keywords": ["limitation of liability", "liable for", "indemnify", "indemnity", "hold harmless", "consequential damages"],
-        "risk": "High"
-    },
-    "Confidentiality": {
-        "keywords": ["confidential", "confidentiality", "non-disclosure", "proprietary information"],
-        "risk": "Medium"
-    },
-    "Bequests and Inheritance (Wills)": {
-        "keywords": ["bequeath", "devise", "give", "will and testament", "heir", "beneficiary", "executor", "my daughters", "my son"],
-        "risk": "Medium"
-    }
 }
 
-def clean_text(text: str) -> str:
-    """A helper function to clean up text by removing excessive newlines and spaces."""
-    # Replace multiple newlines with a single one, and multiple spaces with a single one.
-    text = re.sub(r'\n\s*\n', '\n', text)
-    text = re.sub(r'[ \t]+', ' ', text)
-    return text.strip()
-
-def extract_clauses(full_text: str, rag_agent) -> list[dict]:
-    """
-    Extracts legal clauses using a more robust text splitting and keyword search method.
-    """
-    if not full_text:
-        return []
-
-    logging.info("Starting fast keyword-based clause extraction with improved text handling...")
-    
-    # Clean the full text first to handle OCR messiness
-    cleaned_text = clean_text(full_text)
-    
-    # Split by single newline characters, which is more reliable for OCR output
-    paragraphs = [p.strip() for p in cleaned_text.split('\n') if p.strip() and len(p) > 20]
+def extract_clauses(full_text: str, doc_id: str = "unknown") -> List[Dict]:
+    logging.info(f"Extracting clauses from: {doc_id} with block-oriented patterns.")
     found_clauses = []
-    found_titles = set()
+    
+    # Pre-process text to make regex matching easier
+    processed_text = re.sub(r'\s*\n\s*', '\n', full_text) # Normalize line breaks
 
     for title, data in CLAUSE_PATTERNS.items():
-        if title in found_titles:
-            continue
+        match = re.search(data["pattern"], processed_text, re.IGNORECASE | re.DOTALL)
+        if match:
+            # Extract the entire matched block
+            extracted_text = match.group(1).strip()
+            found_clauses.append({
+                "title": title, 
+                "text": extracted_text, 
+                "risk": data["risk"]
+            })
 
-        for para in paragraphs:
-            # Use a more forgiving lowercase search instead of strict regex
-            para_lower = para.lower()
-            if any(keyword in para_lower for keyword in data['keywords']):
-                found_clauses.append({
-                    "title": title,
-                    "text": para,
-                    "risk": data["risk"]
-                })
-                found_titles.add(title)
-                logging.info(f"Found potential '{title}' clause.")
-                break 
-                
+    with jsonlines.open("clauses.jsonl", mode="a") as writer:
+        writer.write({"doc_id": doc_id, "clauses": found_clauses})
+
     if not found_clauses:
-        logging.warning("No clauses found using the expanded keyword search.")
-        return [{"title": "Info", "text": "No specific clauses were automatically identified. You can still ask questions about the document.", "risk": "Low"}]
-
+        return [{"title": "Info", "text": "No specific clauses were automatically identified with the new patterns.", "risk": "N/A"}]
+        
     return found_clauses
-

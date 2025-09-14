@@ -28,48 +28,30 @@ All major features have been built, and the application is in the final phase of
 
 ---
 
-## 3. Current Challenges & Action Plan  
 
-### ⚠️ Problem 1: Broken Chatbot & Summarizer  
-- **Symptom:** Chatbot/summarizer fail with `"Please upload a document first"` or crash with **token length error**.  
-- **Root Cause:**  
-  - Bug in `app.py` → document text state not managed properly.  
-  - AI crashes when input exceeds max token limit.  
-- **Action Plan:**  
-  - Fix **state management** in `app.py`.  
-  - Auto-truncate/shorten text in `rag_pipeline.py` before sending to AI.  
+This project combines **RAG (Retrieval-Augmented Generation)** with **Ollama** and HuggingFace models to create a secure, efficient, and modular legal research tool.  
 
 ---
 
-### ⚠️ Problem 2: Inaccurate Clause Analysis & Broken “Explain” Button  
-- **Symptom:** Clause analysis misses key clauses. "Explain this Clause with AI" button non-functional.  
-- **Root Cause:**  
-  - `clauses.py` uses overly simple keyword-based search.  
-  - Gradio UI bug (`AttributeError: 'Button' object has no attribute '_id'`).  
-- **Action Plan:**  
-  - Fix UI in `app.py` → stable layout for clause explanations.  
-  - Hybrid approach → fast initial scan + on-demand AI analysis.  
+## 🚀 Features  
+
+✅ **Chatbot Q&A** – Ask questions about uploaded case files or legal documents.  
+✅ **Summarization** – Summarize full legal documents or specific sections.  
+❌ **Explain Clause with AI** – *(Currently under development, not functional yet)*  
+⚡ **Local Inference with Ollama** – Runs on **Mistral** for lightweight GPU-friendly inference.  
+📂 **Document Support** – Works with PDF, DOCX, and OCR (scanned PDFs via Tesseract).  
 
 ---
 
-### ⚠️ Problem 3: Poor Quality of AI Responses  
-- **Symptom:** OCR text is messy ("gibberish") → AI gives poor answers.  
-- **Root Cause:**  
-  - Raw OCR text fed directly into AI without cleanup.  
-  - Prompts not optimized for noisy input.  
-- **Action Plan:**  
-  - Add **text cleaning** in `utils.py`.  
-  - Improve **AI prompts** in `rag_pipeline.py` to handle imperfect input.  
+## 🛠️ Tech Stack  
 
----
-
-## 4. Next Steps  
-- Implement **state management fix** in `app.py`.  
-- Add **text cleaning pipeline** in `utils.py`.  
-- Improve **prompts & summarization logic** in `rag_pipeline.py`.  
-- Stabilize **clause analysis UI**.  
-
-After these fixes, all tests should pass and app will be fully stable.  
+- **Backend:** FastAPI + LangChain  
+- **Frontend / UI:** Gradio  
+- **Models:**  
+  - ✅ **Ollama (Mistral)** – Current default backend  
+  - 🔄 **WIP:** Integrating [`varma007ut/Indian_Legal_Assistant`](https://huggingface.co/varma007ut/Indian_Legal_Assistant) with Ollama for India-specific legal NLP  
+- **Vector DB:** FAISS for fast retrieval  
+- **Extras:** gTTS for TTS, Whisper for STT, pdfplumber & docx for ingestion  
 
 ---
 
@@ -77,7 +59,7 @@ After these fixes, all tests should pass and app will be fully stable.
 
 - 📑 Document Q&A  
 - 📝 Summarization  
-- 📌 Clause Extraction  
+- 📌 Clause Extraction 
 - 🧭 Legal Navigator  
 - ✍️ Document Drafting  
 - 🎙️ Voice Input/Output *(planned)*  

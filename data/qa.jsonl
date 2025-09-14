@@ -1,0 +1,9 @@
+[
+  {
+    "id": "qa_default",
+    "prompt": "You are a legal assistant. Use the provided context to answer the question in a clear and precise way. If the answer is not in the context, say you don't know.",
+    "max_tokens": 400,
+    "temperature": 0.2,
+    "top_p": 0.9
+  }
+]

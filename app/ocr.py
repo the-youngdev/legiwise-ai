@@ -1,44 +1,34 @@
-import easyocr
-import torch
+import pytesseract
+from PIL import Image
 import logging
 
-# Configure basic logging
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+# Configure logging
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
-def initialize_reader():
-    """Initializes the EasyOCR reader, automatically selecting GPU if available."""
-    use_gpu = torch.cuda.is_available()
-    logging.info(f"EasyOCR will use {'GPU' if use_gpu else 'CPU'}.")
-    # Initialize for English. Add other languages like ['en', 'hi'] if needed.
-    return easyocr.Reader(['en'], gpu=use_gpu)
+# Path to Tesseract (update this if it's not in your system's PATH)
+TESSERACT_PATH = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
+pytesseract.pytesseract.tesseract_cmd = TESSERACT_PATH
 
-# Initialize the reader once when the module is loaded
-try:
-    reader = initialize_reader()
-except Exception as e:
-    logging.error(f"Failed to initialize EasyOCR reader: {e}")
-    reader = None
 
-def extract_text_from_image(image_path: str) -> str:
+def extract_text_from_image(image_path: str, lang: str = "eng") -> str:
     """
-    Extracts text from an image file using EasyOCR.
-
-    Args:
-        image_path: The file path to the image.
-
-    Returns:
-        A single string of the extracted text, or an error message.
+    Extracts text from an image using Tesseract OCR.
     """
-    if reader is None:
-        return "Error: OCR reader is not initialized. Please check the logs."
-
     try:
-        # readtext returns a list; paragraph=True helps group related text.
-        result = reader.readtext(image_path, detail=0, paragraph=True)
-        return "\n".join(result)
+        logging.info(f"🖼️ Running Tesseract OCR on {image_path} with lang={lang}")
+        image = Image.open(image_path)
+        text = pytesseract.image_to_string(image, lang=lang)
+
+        if not text.strip():
+            logging.warning(f"⚠️ No text detected in {image_path}.")
+            return ""
+
+        logging.info(f"✅ Tesseract OCR completed, extracted {len(text)} characters.")
+        return text.strip()
+
     except FileNotFoundError:
-        logging.error(f"OCR Error: File not found at {image_path}")
+        logging.error(f"❌ OCR Error: The file was not found at {image_path}")
         return f"Error: The file was not found at {image_path}"
     except Exception as e:
-        logging.error(f"An unexpected OCR error occurred: {e}")
-        return f"An error occurred during OCR processing: {e}"
+        logging.error(f"❌ Tesseract OCR failed on {image_path}: {e}")
+        return "Error: Tesseract OCR failed."
