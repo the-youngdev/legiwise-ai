@@ -1,102 +1,133 @@
-# ⚖️ LegiWise AI: Project Status & Roadmap 
-# ⚖️ LegiWise AI  
+# ⚖️ LegiWise AI – Indian Legal Assistant Model
 
-
-
-**Date:** September 7, 2025  
-**Status:** Core Features Implemented · Final Debugging Phase  
+A fine-tuned **Large Language Model (LLM)** specialized for **Indian legal documents and queries**.  
+This model powers [LegiWise AI](https://github.com/koustavx08/legiwise.ai), a local-first legal assistant for legal research, document analysis, and drafting.
 
 ---
 
-## 1. Project Overview  
-The goal of the **LegiWise AI** project is to create a comprehensive, AI-powered legal assistant.  
-All major features have been built, and the application is in the final phase of **debugging and stabilization**.  
+## 📌 Overview
+
+- Understands **Indian legal language, statutes, and procedures**  
+- Analyzes and summarizes legal documents (contracts, agreements, notices)  
+- Extracts and explains **key clauses** (e.g., jurisdiction, parties, governing law)  
+- Provides **easy-to-understand explanations** of complex clauses  
+- Assists in drafting common legal documents (NDA, Rental Agreement, Power of Attorney, etc.)  
+
+Runs fully **offline with Ollama**, ensuring sensitive legal data remains private.
 
 ---
 
-## 2. What We Have Built (Confirmed Working)  
+## ⚙️ Model Details
 
-- 📑 **Document Analysis & Q&A**: This is the main feature for interacting with your own legal documents.
-
-Upload a File: Start by uploading a PDF, DOCX, or image file (.png, .jpg) in the "Document Analysis & Q&A" tab.
-
-Processing: The app will automatically extract the text (using Tesseract OCR for images and scanned PDFs), clean it, and build a knowledge base. You'll see the status updates as it works.
-
-Ask Questions: Once processing is complete, you can type questions about the document into the chatbox at the bottom and get answers from the AI.
-
-Generate a Summary: Click the "Generate Summary" button to get a concise summary of the entire document.
-- **Extracted Clauses**: This tab helps you quickly identify important clauses in your document.
-
-Automatic Extraction: After you upload a document, this tab will automatically populate with any legal clauses the app identifies (e.g., Payment Terms, Termination).
-
-AI Explanation: For each clause found, you can click the "🤖 Explain this Clause with AI" button to get a simple, easy-to-understand explanation of what it means.
-- 🧭 **Legal Navigator**: This feature provides pre-written guides for common legal procedures.
-
-Select a Topic: Go to the "Legal Navigator" tab and choose a topic from the dropdown menu (e.g., "Filing an FIR").
-
-Ask Questions: The guide content will be loaded into the AI's context. You can then ask specific questions related to that topic in the chatbox.  
-- ✍️ **Legal Drafting Assistant**: Dynamic form + document generation working as expected.  
-- 🌐 **Multilingual Translation**: Underlying translation module is functional.  
+- **Format:** GGUF (optimized for Ollama)  
+- **Size:** ~8.54 GB  
+- **Base Architecture:** LLaMA/Mistral variant  
+- **Embedding Model (for RAG):** `sentence-transformers/all-MiniLM-L6-v2`  
+- **Dataset:** Indian legal texts, contracts, case law, FAQs  
 
 ---
 
+## 🚀 Installation
 
-This project combines **RAG (Retrieval-Augmented Generation)** with **Ollama** and HuggingFace models to create a secure, efficient, and modular legal research tool.  
-
----
-
-## 🚀 Features  
-
-✅ **Chatbot Q&A** – Ask questions about uploaded case files or legal documents.  
-✅ **Summarization** – Summarize full legal documents or specific sections.  
-❌ **Explain Clause with AI** – *(Currently under development, not functional yet)*  
-⚡ **Local Inference with Ollama** – Runs on **Mistral** for lightweight GPU-friendly inference.  
-📂 **Document Support** – Works with PDF, DOCX, and OCR (scanned PDFs via Tesseract).  
-
----
-
-## 🛠️ Tech Stack  
-
-- **Backend:** FastAPI + LangChain  
-- **Frontend / UI:** Gradio  
-- **Models:**  
-  - ✅ **Ollama (Mistral)** – Current default backend  
-  - 🔄 **WIP:** Integrating [`varma007ut/Indian_Legal_Assistant`](https://huggingface.co/varma007ut/Indian_Legal_Assistant) with Ollama for India-specific legal NLP  
-- **Vector DB:** FAISS for fast retrieval  
-- **Extras:** gTTS for TTS, Whisper for STT, pdfplumber & docx for ingestion  
-
----
-
-## 5. Features  
-
-- 📑 Document Q&A  
-- 📝 Summarization  
-- 📌 Clause Extraction 
-- 🧭 Legal Navigator  
-- ✍️ Document Drafting  
-- 🎙️ Voice Input/Output *(planned)*  
-- 📊 Analytics Dashboard *(planned)*  
-
----
-
-## 6. Installation  
+### 1. Download the Model
+Download the GGUF file from [Hugging Face](https://huggingface.co/varma007ut/Indian_Legal_Assitant) and place it in:
 
 ```bash
-pip install -r requirements.txt
+LEGIWISE/models/outpt_file.gguf
 ```
 
----
+### 2. Create a Modelfile
 
-## 7. Usage  
+In the root directory, create a file named `Modelfile`:
 
-Run the main app with:  
+```text
+FROM ./models/outpt_file.gguf
+```
+
+### 3. Register in Ollama
+
+Make sure Ollama is running, then register the model:
+```
+ollama create indian-legal-assistant -f Modelfile
+```
+
+Verify installation:
+
+```bash
+ollama list
+```
+
+You should see:
+
+```
+indian-legal-assistant:latest
+```
+
+----------
+
+## 🧑‍💻 Usage
+
+Run directly with Ollama:
+
+```bash
+ollama run indian-legal-assistant
+```
+
+Or integrate with **LegiWise AI**:
 
 ```bash
 python app.py
 ```
 
-This will start the **Gradio web interface** for LegiWise AI.  
-Once running, open the provided `http://127.0.0.1:7860` link in your browser.  
+This launches a Gradio interface to:
 
----
+-   Upload legal documents (PDF, DOCX, Images)
+    
+-   Ask document-specific questions
+    
+-   Summarize or analyze clauses
+    
+-   Draft legal templates
+    
 
+----------
+
+## 📂 Repository Structure
+
+```
+models/              # Store GGUF model files here
+Modelfile            # Model configuration for Ollama
+README.md            # Documentation (this file)
+```
+----------
+
+## 🔒 Privacy & Disclaimer
+
+-   Runs **entirely offline** on your local machine
+    
+-   No data is sent to external servers
+    
+-   Safe for sensitive legal documents
+    
+
+⚠️ **Disclaimer:** This tool is for **informational and research purposes only**.  
+It does **not provide legal advice** and should not replace consultation with a qualified lawyer.
+
+----------
+
+## 📜 License
+
+Released under the **MIT License**.
+
+----------
+
+## 🌟 Acknowledgements
+
+-   [Hugging Face – varma007ut/Indian_Legal_Assitant](https://huggingface.co/varma007ut/Indian_Legal_Assitant)
+    
+-   [Ollama](https://ollama.ai/)
+    
+-   [FAISS](https://faiss.ai/)
+    
+-   [LangChain](https://www.langchain.com/)
+    
