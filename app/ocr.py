@@ -6,8 +6,8 @@ import logging
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
 # Path to Tesseract (update this if it's not in your system's PATH)
-TESSERACT_PATH = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
-pytesseract.pytesseract.tesseract_cmd = TESSERACT_PATH
+#TESSERACT_PATH = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
+#pytesseract.pytesseract.tesseract_cmd = TESSERACT_PATH
 
 
 def extract_text_from_image(image_path: str, lang: str = "eng") -> str:

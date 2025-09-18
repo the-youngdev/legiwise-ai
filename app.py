@@ -4,7 +4,7 @@ from app import utils, clauses, translator, navigator, drafting
 from app.rag_pipeline import RagPipeline
 
 # --- 1. SETUP & INITIALIZATION ---
-os.environ['HF_HOME'] = 'D:/huggingface_cache'
+#os.environ['HF_HOME'] = 'D:/huggingface_cache'
 
 try:
     rag_agent = RagPipeline(model="mistral")
