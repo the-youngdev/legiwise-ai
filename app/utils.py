@@ -31,7 +31,7 @@ def _extract_text_from_scanned_pdf(file_path: str) -> str:
     """Performs OCR on a scanned PDF and cleans the output."""
     logging.info("📄 PDF appears to be scanned. Starting OCR process.")
     try:
-        images = convert_from_path(file_path, poppler_path=POPPLER_PATH)
+        images = convert_from_path(file_path)
         full_text = ""
         with tempfile.TemporaryDirectory() as temp_dir:
             for i, image in enumerate(images):
