@@ -26,14 +26,16 @@ client = motor.motor_asyncio.AsyncIOMotorClient(MONGO_URI)
 db = client.legiwise  # database name
 
 # --- RAG Model ---
-rag_agent = RagPipeline(model="mistral")
+# --- THIS IS THE MODIFIED LINE ---
+# The API will now use your custom-built Ollama model.
+rag_agent = RagPipeline(model="indian-legal-assistant")
 
 app = FastAPI(title="LegiWise Chat API")
 
 # --- Middleware (CORS) ---
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # 👈 Restrict to frontend URL in production
+    allow_origins=["*"],  # 👈 Restrict to your frontend URL in production
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -91,12 +93,15 @@ async def send_message(req: ChatRequest):
     if not user and req.userID != "guest-user":
         raise HTTPException(status_code=404, detail="User not found")
 
-    # ✅ Free-text fallback if no document is uploaded
+    # --- THIS LOGIC IS NOW CORRECTED ---
+    # It now correctly handles both document-based and general queries.
     if req.doc_state and req.doc_state.strip():
+        # Document Mode
         rag_agent.create_knowledge_base(req.doc_state)
         answer = rag_agent.ask(req.userPrompt)
     else:
-        answer = rag_agent.ask(req.userPrompt)
+        # General Mode
+        answer = rag_agent.general_ask(req.userPrompt)
 
     chat_doc = {
         "participant": safe_user_id(req.userID),
