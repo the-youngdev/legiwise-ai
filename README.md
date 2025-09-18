@@ -1,5 +1,11 @@
 # ⚖️ LegiWise AI – Indian Legal Assistant Model
 
+![Python](https://img.shields.io/badge/python-3.10%2B-blue.svg)
+![HuggingFace](https://img.shields.io/badge/🤗-Transformers-orange)
+![Gradio](https://img.shields.io/badge/Gradio-Interface-brightgreen)
+![License](https://img.shields.io/badge/License-MIT-yellow)
+![Status](https://img.shields.io/badge/Status-Active-success)
+
 A fine-tuned **Large Language Model (LLM)** specialized for **Indian legal documents and queries**.  
 This model powers [LegiWise AI](https://github.com/koustavx08/legiwise.ai), a local-first legal assistant for legal research, document analysis, and drafting.
 
