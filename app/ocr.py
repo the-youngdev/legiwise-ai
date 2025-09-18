@@ -17,7 +17,7 @@ def extract_text_from_image(image_path: str, lang: str = "eng") -> str:
     try:
         logging.info(f"🖼️ Running Tesseract OCR on {image_path} with lang={lang}")
         image = Image.open(image_path)
-        text = pytesseract.image_to_string(image, lang=lang)
+        text = pytesseract.image_to_string(image, lang=lang ,config="--psm 6")
 
         if not text.strip():
             logging.warning(f"⚠️ No text detected in {image_path}.")
