@@ -13,6 +13,9 @@ __pycache__/
 huggingface_cache/
 D:/huggingface_cache/
 
+# Ignore downloaded model files
+/models/
+
 # Logs & checkpoints
 runs/
 *.log

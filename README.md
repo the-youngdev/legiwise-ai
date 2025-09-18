@@ -1,11 +1,6 @@
 # ⚖️ LegiWise AI: Project Status & Roadmap 
 # ⚖️ LegiWise AI  
 
-![Python](https://img.shields.io/badge/python-3.10%2B-blue.svg)
-![HuggingFace](https://img.shields.io/badge/🤗-Transformers-orange)
-![Gradio](https://img.shields.io/badge/Gradio-Interface-brightgreen)
-![License](https://img.shields.io/badge/License-MIT-yellow)
-![Status](https://img.shields.io/badge/Status-Active-success)
 
 
 **Date:** September 7, 2025  
@@ -21,8 +16,25 @@ All major features have been built, and the application is in the final phase of
 
 ## 2. What We Have Built (Confirmed Working)  
 
-- 📑 **Document Loading & OCR**: Successfully loads **PDF, DOCX, and image files**. OCR engine correctly extracts text from scanned documents.  
-- 🧭 **Legal Navigator**: Pre-loaded legal guides and dedicated Q&A fully functional.  
+- 📑 **Document Analysis & Q&A**: This is the main feature for interacting with your own legal documents.
+
+Upload a File: Start by uploading a PDF, DOCX, or image file (.png, .jpg) in the "Document Analysis & Q&A" tab.
+
+Processing: The app will automatically extract the text (using Tesseract OCR for images and scanned PDFs), clean it, and build a knowledge base. You'll see the status updates as it works.
+
+Ask Questions: Once processing is complete, you can type questions about the document into the chatbox at the bottom and get answers from the AI.
+
+Generate a Summary: Click the "Generate Summary" button to get a concise summary of the entire document.
+- **Extracted Clauses**: This tab helps you quickly identify important clauses in your document.
+
+Automatic Extraction: After you upload a document, this tab will automatically populate with any legal clauses the app identifies (e.g., Payment Terms, Termination).
+
+AI Explanation: For each clause found, you can click the "🤖 Explain this Clause with AI" button to get a simple, easy-to-understand explanation of what it means.
+- 🧭 **Legal Navigator**: This feature provides pre-written guides for common legal procedures.
+
+Select a Topic: Go to the "Legal Navigator" tab and choose a topic from the dropdown menu (e.g., "Filing an FIR").
+
+Ask Questions: The guide content will be loaded into the AI's context. You can then ask specific questions related to that topic in the chatbox.  
 - ✍️ **Legal Drafting Assistant**: Dynamic form + document generation working as expected.  
 - 🌐 **Multilingual Translation**: Underlying translation module is functional.  
 

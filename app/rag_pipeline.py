@@ -38,7 +38,23 @@ class RagPipeline:
         except Exception as e:
             logging.error(f"Ollama ASK failed: {e}")
             return f"Error: Could not generate answer. Details: Failed to connect to Ollama. Please check that Ollama is downloaded, running and accessible. https://ollama.com/download"
+# Add this new method to your RagPipeline class in LEGIWISE/app/rag_pipeline.py
 
+    def general_ask(self, query: str) -> str:
+        """
+        Asks a general question to the model without document context.
+        """
+        try:
+            # A prompt that frames the model as a general legal assistant
+            prompt = f"You are a helpful legal assistant. Please answer the following question clearly and concisely.\n\nQuestion: {query}\n\nAnswer:"
+            
+            # We use invoke directly on the chain with an empty context
+            response = self.qa_chain.invoke({"input_documents": [], "question": prompt})
+            return response.get("output_text", "I am unable to answer that question at the moment.").strip()
+        except Exception as e:
+            logging.error(f"Ollama GENERAL ASK failed: {e}")
+            return f"Error: The Ollama model failed to respond. Please ensure it is running."
+   
     def summarize(self, text: str) -> str:
         if not text:
             return "Error: Cannot summarize empty text."

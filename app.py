@@ -1,22 +1,18 @@
 import os
 import gradio as gr
-from app import utils, clauses, translator, navigator, drafting
-from app.rag_pipeline import RagPipeline
+from app import utils, clauses, navigator, drafting, rag_pipeline
 
 # --- 1. SETUP & INITIALIZATION ---
 os.environ['HF_HOME'] = 'D:/huggingface_cache'
 
 try:
-    rag_agent = RagPipeline(model="mistral")
+    # Use your custom model or a default like "mistral"
+    rag_agent = rag_pipeline.RagPipeline(model="indian-legal-assistant") 
 except Exception as e:
-    # This will catch errors during initialization, like the Ollama connection issue
     rag_agent = None
     initialization_error = e
 
 MAX_CLAUSES_TO_DISPLAY = 10
-output_language_choices = ["English (en_XX)"] + [
-    f"{name} ({code})" for name, code in translator.INDIAN_LANGUAGES.items()
-]
 
 # --- 2. CORE GRADIO FUNCTIONS ---
 def process_file(file, progress=gr.Progress(track_tqdm=True)):
@@ -57,11 +53,11 @@ def get_summary(doc_state, progress=gr.Progress(track_tqdm=True)):
     return rag_agent.summarize(doc_state)
 
 def respond(message, history, doc_state):
-    if not doc_state:
-        history.append((message, "Please upload a document first."))
-        return "", history
-    rag_agent.create_knowledge_base(doc_state)
-    answer = rag_agent.ask(message)
+    if doc_state:
+        rag_agent.create_knowledge_base(doc_state)
+        answer = rag_agent.ask(message)
+    else:
+        answer = rag_agent.general_ask(message)
     history.append((message, answer))
     return "", history
 
@@ -92,9 +88,7 @@ with gr.Blocks(theme=gr.themes.Soft(), title="LegiWise AI") as demo:
                     summary_output = gr.Textbox(label="Summary", lines=10, interactive=False)
                 with gr.Column(scale=2):
                     chatbot = gr.Chatbot(label="Document Chat", height=500)
-                    with gr.Row():
-                        output_language_dropdown = gr.Dropdown(choices=output_language_choices, value="English (en_XX)", label="Answer Language", min_width=150)
-                        msg_box = gr.Textbox(placeholder="Ask a question about the document...", show_label=False, container=False, scale=3)
+                    msg_box = gr.Textbox(placeholder="Ask a question about the document or a general legal question...", show_label=False, container=False)
 
         with gr.TabItem("🧭 Legal Navigator"):
             with gr.Row():
@@ -104,15 +98,31 @@ with gr.Blocks(theme=gr.themes.Soft(), title="LegiWise AI") as demo:
                 with gr.Column(scale=2):
                     navigator_chatbot = gr.Chatbot(height=500, label="Navigator Chat")
                     navigator_msg_box = gr.Textbox(show_label=False, container=False)
-
+        
+        # --- FIX START: Corrected Legal Drafting Assistant Tab ---
         with gr.TabItem("✍️ Legal Drafting Assistant"):
-            # This section is filled out for completeness
             with gr.Row():
                 with gr.Column(scale=1):
-                    drafting_dropdown = gr.Dropdown(choices=list(drafting.DRAFTING_TEMPLATES.keys()), label="Select Document Type")
+                    gr.Markdown("### 1. Select Document Type")
+                    drafting_dropdown = gr.Dropdown(
+                        choices=list(drafting.DRAFTING_TEMPLATES.keys()),
+                        label="Select Document Type"
+                    )
+                    
+                    gr.Markdown("### 2. Fill in Details")
+                    # Create and place all possible input fields here
+                    drafting_inputs = {}
+                    all_possible_fields = sorted(list({field for t in drafting.DRAFTING_TEMPLATES.values() for field in t["fields"]}))
+                    
+                    for field in all_possible_fields:
+                        drafting_inputs[field] = gr.Textbox(label=field, visible=False)
+                    
+                    gr.Markdown("### 3. Generate")
                     draft_button = gr.Button("Generate Draft")
+
                 with gr.Column(scale=2):
-                    draft_output = gr.Textbox(label="Generated Draft", lines=25, interactive=True)
+                    draft_output = gr.Textbox(label="Generated Draft", lines=35, interactive=True)
+        # --- FIX END ---
 
         with gr.TabItem("🔍 Extracted Clauses"):
             with gr.Row():
@@ -139,6 +149,31 @@ with gr.Blocks(theme=gr.themes.Soft(), title="LegiWise AI") as demo:
     
     navigator_dropdown.change(load_guide, [navigator_dropdown], [navigator_status, navigator_chatbot, doc_state])
     navigator_msg_box.submit(navigator_respond, [navigator_msg_box, navigator_chatbot], [navigator_msg_box, navigator_chatbot])
+
+    # --- FIX START: Corrected Event Listeners for Drafting ---
+    def show_relevant_fields(template_name):
+        required_fields = drafting.DRAFTING_TEMPLATES.get(template_name, {}).get("fields", {}).keys()
+        updates = {}
+        for field, component in drafting_inputs.items():
+            updates[component] = gr.update(visible=(field in required_fields))
+        return updates
+
+    drafting_dropdown.change(
+        fn=show_relevant_fields,
+        inputs=[drafting_dropdown],
+        outputs=list(drafting_inputs.values())
+    )
+    
+    def generate_draft_ui(template_name, *args):
+        details = {field: value for field, value in zip(all_possible_fields, args)}
+        return drafting.generate_draft(template_name, details)
+
+    draft_button.click(
+        fn=generate_draft_ui,
+        inputs=[drafting_dropdown] + list(drafting_inputs.values()),
+        outputs=[draft_output]
+    )
+    # --- FIX END ---
 
 # --- 5. App Launch ---
 if __name__ == "__main__":
